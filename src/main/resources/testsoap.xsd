@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:tns="http://localhost/soap"
+           targetNamespace="http://localhost/soap" 
+           xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+           elementFormDefault="qualified"
+           >
+ 
+    <xs:element name="getDataRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="data" type="xs:string"/>
+                <xs:element name="content" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="getDataResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="info" type="tns:info"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="info">
+        <xs:sequence>
+            <xs:element name="data" type="xs:string"/>
+            <xs:element name="content" type="xs:base64Binary" xmime:contentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+</xs:schema>
