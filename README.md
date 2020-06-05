@@ -12,6 +12,6 @@ XML Request struct
          <soap:token>"Token(default=permitir)"</soap:token>
          <soap:data>"String data"</soap:data>
          <soap:content>"String Base64 encoded"</soap:content>
-         </soap:getDataRequest>
+      </soap:getDataRequest>
    </soapenv:Body>
 </soapenv:Envelope>
