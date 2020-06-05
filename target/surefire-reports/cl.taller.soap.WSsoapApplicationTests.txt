@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: cl.taller.soap.WSsoapApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.137 s - in cl.taller.soap.WSsoapApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.957 s - in cl.taller.soap.WSsoapApplicationTests
