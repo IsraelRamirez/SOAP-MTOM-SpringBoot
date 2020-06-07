@@ -1,35 +1,24 @@
-//
-// Este archivo ha sido generado por la arquitectura JavaTM para la implantación de la referencia de enlace (JAXB) XML v2.2.7 
-// Visite <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2020.06.06 a las 08:44:16 PM CLT 
-//
-
-
 package cl.taller.soap.localhost.soap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para anonymous complex type.
+ * <p>Clase Java para file complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="file">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="token" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="codCarrera" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="filename" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="mimetype" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="content" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="content" type="{http://www.w3.org/2001/XMLSchema}base64Binary"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -39,74 +28,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "token",
-    "codCarrera",
+@XmlType(name = "file", propOrder = {
     "filename",
     "mimetype",
     "content"
 })
-@XmlRootElement(name = "getDataRequest")
-public class GetDataRequest {
+public class File {
 
-    @XmlElement(required = true)
-    protected String token;
-    @XmlElement(required = true)
-    protected String codCarrera;
     @XmlElement(required = true)
     protected String filename;
     @XmlElement(required = true)
     protected String mimetype;
     @XmlElement(required = true)
-    protected String content;
-
-    /**
-     * Obtiene el valor de la propiedad token.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * Define el valor de la propiedad token.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setToken(String value) {
-        this.token = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad codCarrera.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCodCarrera() {
-        return codCarrera;
-    }
-
-    /**
-     * Define el valor de la propiedad codCarrera.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCodCarrera(String value) {
-        this.codCarrera = value;
-    }
+    protected byte[] content;
 
     /**
      * Obtiene el valor de la propiedad filename.
@@ -161,10 +95,9 @@ public class GetDataRequest {
      * 
      * @return
      *     possible object is
-     *     {@link String }
-     *     
+     *     byte[]
      */
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
@@ -173,10 +106,9 @@ public class GetDataRequest {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
-     *     
+     *     byte[]
      */
-    public void setContent(String value) {
+    public void setContent(byte[] value) {
         this.content = value;
     }
 

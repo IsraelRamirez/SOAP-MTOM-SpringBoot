@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por la arquitectura JavaTM para la implantación de la referencia de enlace (JAXB) XML v2.2.7 
 // Visite <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2020.06.05 a las 04:44:40 PM CLT 
+// Generado el: 2020.06.06 a las 08:44:16 PM CLT 
 //
 
 
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="info" type="{http://localhost/soap}info"/>
+ *         &lt;element name="file" type="{http://localhost/soap}file"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,36 +36,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "info"
+    "file"
 })
 @XmlRootElement(name = "getDataResponse")
 public class GetDataResponse {
 
     @XmlElement(required = true)
-    protected Info info;
+    protected File file;
 
     /**
-     * Obtiene el valor de la propiedad info.
+     * Obtiene el valor de la propiedad file.
      * 
      * @return
      *     possible object is
-     *     {@link Info }
+     *     {@link File }
      *     
      */
-    public Info getInfo() {
-        return info;
+    public File getFile() {
+        return file;
     }
 
     /**
-     * Define el valor de la propiedad info.
+     * Define el valor de la propiedad file.
      * 
      * @param value
      *     allowed object is
-     *     {@link Info }
+     *     {@link File }
      *     
      */
-    public void setInfo(Info value) {
-        this.info = value;
+    public void setFile(File value) {
+        this.file = value;
     }
 
 }
