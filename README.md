@@ -9,17 +9,18 @@ WSaccess = "http://localhost:8080/ws/soap.wsdl".
 DefaultTokenAccess = "fk2x6rpw6fDCkXqDlqeeR22u8jpN6qGa".
 
 XML Request struct
-<soap:getDataRequest>
 
-   <soap:token>?</soap:token>
+<<soap:getDataRequest>>
 
-   <soap:codCarrera>?</soap:codCarrera>
+   <<soap:token>>?</soap:token>
 
-   <soap:filename>?</soap:filename>
+   <<soap:codCarrera>>?</soap:codCarrera>
 
-   <soap:mimetype>?</soap:mimetype>
+   <<soap:filename>>?</soap:filename>
 
-   <soap:content>?Base64string</soap:content>
+   <<soap:mimetype>>?</soap:mimetype>
 
-</soap:getDataRequest>
+   <<soap:content>>?Base64string</soap:content>
+
+<</soap:getDataRequest>
 
