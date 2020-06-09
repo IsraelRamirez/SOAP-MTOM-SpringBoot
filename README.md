@@ -12,9 +12,9 @@ XML Request struct
 
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://localhost/soap">
 
-   <soapenv:Header/>
+<soapenv:Header/>
    
-   <soapenv:Body>
+<soapenv:Body>
    
       <soap:getDataRequest>
       
