@@ -41,7 +41,6 @@ public class File {
     protected String mimetype;
     @XmlElement(required = true)
     protected byte[] content;
-
     /**
      * Obtiene el valor de la propiedad filename.
      * 

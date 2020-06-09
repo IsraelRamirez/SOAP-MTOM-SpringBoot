@@ -21,30 +21,7 @@ public class SoapWSConfig extends WsConfigurationSupport{
         servlet.setTransformWsdlLocations(true);
         return new ServletRegistrationBean<MessageDispatcherServlet>(servlet,"/ws/*");
     }
-    /*
-    @Bean
-    public Jaxb2Marshaller marshaller(){
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("cl.taller.soap.localhost.soap");
-        marshaller.setMtomEnabled(true);
-        return marshaller;
-    }
-    @Bean
-    @Override
-    public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter(){
-        List<MethodArgumentResolver> argumentResolvers = new ArrayList<>();
-        argumentResolvers.add(methodProcessor());
-        List<MethodReturnValueHandler> returnValueHandlers = new ArrayList<>();
-        returnValueHandlers.add(methodProcessor());
-        DefaultMethodEndpointAdapter adapter = new DefaultMethodEndpointAdapter();
-        adapter.setMethodArgumentResolvers(argumentResolvers);
-        adapter.setCustomMethodReturnValueHandlers(returnValueHandlers);
-        return adapter;
-    } 
-    @Bean
-    public MarshallingPayloadMethodProcessor methodProcessor(){
-        return new MarshallingPayloadMethodProcessor(marshaller());
-    }*/
+   
     @Bean(name="soap")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema schema){
         DefaultWsdl11Definition defaultWsdl11Definition=new DefaultWsdl11Definition();
