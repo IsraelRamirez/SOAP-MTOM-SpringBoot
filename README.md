@@ -22,5 +22,5 @@ XML Request struct
 
    <<soap:content>>?Base64string</soap:content>
 
-<</soap:getDataRequest>
+</soap:getDataRequest>
 
