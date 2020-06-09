@@ -10,27 +10,14 @@ DefaultTokenAccess = "fk2x6rpw6fDCkXqDlqeeR22u8jpN6qGa".
 
 XML Request struct
 
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://localhost/soap">
 
-<soapenv:Header/>
-   
 <soapenv:Body>
-   
       <soap:getDataRequest>
-      
          <soap:token>?</soap:token>
-         
          <soap:codCarrera>?</soap:codCarrera>
-         
          <soap:filename>?</soap:filename>
-         
          <soap:mimetype>?</soap:mimetype>
-         
          <soap:content>?Base64string</soap:content>
-         
       </soap:getDataRequest>
-      
    </soapenv:Body>
-   
-</soapenv:Envelope>
 
