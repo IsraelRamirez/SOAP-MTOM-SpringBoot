@@ -1,9 +1,9 @@
 package cl.taller.soap.service;
 
 import static cl.taller.soap.dbconnetion.connetiondb.connectDB;
-import cl.taller.soap.localhost.soap.File;
-import cl.taller.soap.localhost.soap.GetDataRequest;
-import cl.taller.soap.localhost.soap.GetDataResponse;
+import cl.taller.soap.models.File;
+import cl.taller.soap.models.GetDataRequest;
+import cl.taller.soap.models.GetDataResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
