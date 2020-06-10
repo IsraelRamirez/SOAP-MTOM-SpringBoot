@@ -1,7 +1,7 @@
 package cl.taller.soap.endpoint;
 
-import cl.taller.soap.localhost.soap.GetDataRequest;
-import cl.taller.soap.localhost.soap.GetDataResponse;
+import cl.taller.soap.models.GetDataRequest;
+import cl.taller.soap.models.GetDataResponse;
 import cl.taller.soap.service.WServiceImple;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class soapEndPoint {
-    private static final String NAMESPACE="http://localhost/soap";
+    private static final String NAMESPACE="http://cl/taller/soap/models";
     @Autowired
     private WServiceImple service;
     @PayloadRoot(namespace=NAMESPACE,localPart="getDataRequest")

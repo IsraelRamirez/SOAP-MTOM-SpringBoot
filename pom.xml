@@ -78,7 +78,7 @@
 				<configuration>
 					<!-- The package of your generated sources -->
 					<schemaDirectory>${project.basedir}/src/main/resources/</schemaDirectory>
-					<outputDirectory>${project.basedir}/src/main/java/cl/taller/soap</outputDirectory>
+					<outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
 					<clearOutputDir>false</clearOutputDir>
 				</configuration>
 			</plugin>

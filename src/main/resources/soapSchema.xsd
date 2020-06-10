@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           xmlns:tns="http://localhost/soap"
-           targetNamespace="http://localhost/soap" 
+           xmlns:tns="http://cl/taller/soap/models"
+           targetNamespace="http://cl/taller/soap/models" 
            xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
            elementFormDefault="qualified">
  
