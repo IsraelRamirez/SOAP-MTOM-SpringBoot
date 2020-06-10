@@ -1,10 +1,10 @@
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\models\ObjectFactory.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\models\package-info.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\dbconnetion\connetiondb.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\WSsoapApplication.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\models\File.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\endpoint\soapEndPoint.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\service\WServiceImple.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\config\SoapWSConfig.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\models\GetDataRequest.java
-C:\Users\Isra Ramirez\Desktop\soap\src\main\java\cl\taller\soap\models\GetDataResponse.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/config/SoapWSConfig.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/dbconnetion/connetiondb.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/ObjectFactory.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/endpoint/soapEndPoint.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/package-info.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/service/WServiceImple.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/GetDataRequest.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/File.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/GetDataResponse.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/WSsoapApplication.java
