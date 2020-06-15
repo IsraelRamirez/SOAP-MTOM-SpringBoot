@@ -14,8 +14,6 @@ XML Request struct
 
    <<soap:token>>?</soap:token>
 
-   <<soap:codCarrera>>?</soap:codCarrera>
-
    <<soap:filename>>?</soap:filename>
 
    <<soap:mimetype>>?</soap:mimetype>
