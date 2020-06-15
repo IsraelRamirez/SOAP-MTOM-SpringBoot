@@ -9,7 +9,6 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="token" type="xs:string"/>
-                <xs:element name="codCarrera" type="xs:string"/>
                 <xs:element name="filename" type="xs:string"/>
                 <xs:element name="mimetype" type="xs:string"/>
                 <xs:element name="content" type="xs:string" />

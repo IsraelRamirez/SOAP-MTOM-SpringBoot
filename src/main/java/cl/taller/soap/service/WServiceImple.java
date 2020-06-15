@@ -4,6 +4,8 @@ import static cl.taller.soap.dbconnetion.connetiondb.connectDB;
 import cl.taller.soap.models.File;
 import cl.taller.soap.models.GetDataRequest;
 import cl.taller.soap.models.GetDataResponse;
+import cl.taller.soap.models.carreras;
+import cl.taller.soap.models.ruts;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import org.apache.commons.math3.util.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -27,7 +30,11 @@ public class WServiceImple{
     
     private static final String token = "fk2x6rpw6fDCkXqDlqeeR22u8jpN6qGa";
     private static final String error = "Token ingresado no valido.";
-    private static final String query = "SELECT nem, ranking,lenguaje,matematica,histociencia FROM ponderado WHERE codCarrera =";
+    private static final String queryPonderador = "SELECT nem, ranking,lenguaje,matematica,histociencia FROM ponderado WHERE codCarrera=";
+    private static final String queryPonderadorMultiple = "SELECT nem, ranking,lenguaje,matematica,histociencia,codCarrera,first FROM ponderado WHERE ";
+    private static final String queryInit = "SELECT codCarrera FROM ponderado";
+    private static final String queryVacant = "SELECT vacant FROM ponderado WHERE codCarrera=";
+    private static final String queryFirst = "SELECT first FROM ponderado WHERE codCarrera=";
     /**
      * Función que valida la llave token ingresada por el cliente
      * @param request Objecto con los puntajes y datos de los alumnos
@@ -66,28 +73,198 @@ public class WServiceImple{
         String mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         String fileName= "puntajes.xlsx";
         
-        int codCarrera = Integer.parseInt(request.getCodCarrera());
-        Workbook wb = new SXSSFWorkbook();
-        Sheet sheet = wb.createSheet();
+        List<carreras> carreras = initCarreras();
+        List<ruts> ruts = new ArrayList<ruts>();
         
         String fullData = new String(Base64.getDecoder().decode(request.getContent()),"UTF-8");
         String[] datas = fullData.split("\n");
         
-        for(int i = 0; i< datas.length;i++){
-            List<String> full = operador(datas[i],codCarrera);
-            Row row = sheet.createRow(i);
-            for(int j=0; j <2;j++){
-                Cell cell = row.createCell(j);
-                cell.setCellValue(full.get(j));
+        operador(datas,carreras,ruts);
+        
+        boolean finish = false;
+        while(!finish && !isFull(carreras)){
+            for(int i = 0; i<ruts.size();i++){
+                if(ruts.get(i).codCarreras.size()>0){
+                    if(ruts.get(i).codCarreras.get(ruts.get(i).codCarreras.size()-1)!=-1){
+                        if(!isIn(carreras,ruts.get(i).getRut(),ruts.get(i).codCarreras.get(ruts.get(i).codCarreras.size()-1))){
+                            Pair<Integer, Double> pair = ponderadorMultiple(ruts.get(i));
+                            for(int j=0;j<carreras.size();j++){
+                                if(carreras.get(j).getCod()==pair.getKey()){
+                                    int index = indexador(carreras.get(j).personas,pair.getValue());
+                                    if(index!=-1){
+                                        carreras.get(j).personas.add(index,new Pair<>(ruts.get(i).getRut(),pair.getValue()));
+                                    }
+                                    else{
+                                        carreras.get(j).personas.add(new Pair<>(ruts.get(i).getRut(),pair.getValue()));
+                                    }
+                                    
+                                    ruts.get(i).codCarreras.add(-1);
+                                    
+                                    Connection connectionDB = connectDB();
+
+                                    if(connectionDB!=null){
+                                        Statement st = connectionDB.createStatement();
+                                        ResultSet rs = st.executeQuery(queryVacant+carreras.get(j).getCod());
+                                        rs.next();
+                                        if(carreras.get(j).personas.size()>rs.getInt(1)){
+                                            
+                                            for(int w=0;w<ruts.size();w++){
+                                                if(ruts.get(w).getRut().equals(carreras.get(j).personas.get(carreras.get(j).personas.size()-1).getKey())){
+                                                    ruts.get(w).codCarreras.add(carreras.get(j).getCod());
+                                                }
+                                            }
+                                            carreras.get(j).personas.remove(carreras.get(j).personas.size()-1);
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                }
             }
+            finish = isAllFinish(ruts);
         }
+        
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        wb.write(bos);
+        
 
-        getData.setFile(setData(bos,fileName,mimeType,codCarrera));
+        getData.setFile(setData(getExcel(carreras),fileName,mimeType));
         return getData;
     }
+    /**
+     * Función que genera, según los ruts ingresados en la carrera, un excel con los datos obtenidos
+     * @param carreras Lista con las carreras, sus ruts ingresados y sus ponderaciones
+     * @return Devuelve un Array de byte con el formato de excel "xlsx"
+     * @throws IOException Excepción relacionada con algún fallo generado por el ingreso de los datos en el formato excel     
+     */
+    private ByteArrayOutputStream getExcel(List<carreras> carreras) throws IOException{
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Workbook wb = new SXSSFWorkbook();
+        
+        for(int i=0;i< carreras.size();i++){
+            Sheet sheet = wb.createSheet(String.valueOf(carreras.get(i).getCod()));
+            for(int j=0;j<carreras.get(i).personas.size();j++){
+                Row row = sheet.createRow(j);
+                
+                Cell cell = row.createCell(0);
+                cell.setCellValue(carreras.get(i).personas.get(j).getKey());
+                cell = row.createCell(1);
+                cell.setCellValue(carreras.get(i).personas.get(j).getValue());
+            }
+        }
+        wb.write(bos);
+        return bos;
+    }
+    /**
+     * Función que genera una lista de carreras, con el codigo de carrera correspondiente.
+     * @return Devuelve una lista de las carreras inicialiazadas con el código de carrera.
+     * @throws SQLException Excepción relacionada con algún problema con el motor de base de datos usados.
+     */
+    private List<carreras> initCarreras() throws SQLException{
+        List<carreras> carreras=new ArrayList<carreras>();
+        Connection connectionDB = connectDB();
+        
+        if(connectionDB!=null){
+            Statement st = connectionDB.createStatement();
+            ResultSet rs = st.executeQuery(queryInit);
+            while(rs.next()){
+                if(rs.getInt(1)!=0){
+                    carreras carrera = new carreras();
+                    carrera.setCod(rs.getInt(1));
+                    carreras.add(carrera);
+                }
+                
+            }
+        }
+        return carreras;
+    }
+    /**
+     * Función que verifica si el rut ingresado se encuentra en la carrera solicitada
+     * @param carreras Lista con todas las carreras manejadas
+     * @param rut Rut a consultar
+     * @param codCarrera Código de la carrera a solicitar
+     * @return Devuelve si el rut ingresado se encuentra o no en la carrera solicitada
+     */
+    private boolean isIn(List<carreras> carreras, String rut,int codCarrera){
+        boolean isIn = false;
+        for(int i=0;i<carreras.size();i++){
+            if(carreras.get(i).getCod()==codCarrera){
+                for(int j=0;j<carreras.get(i).personas.size();j++){
+                    if(carreras.get(i).personas.get(j).getKey().equals(rut)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return  isIn;
+    }
+    /**
+     * Función que verifica si todos los ruts están ingresados en alguna carrera.
+     * @param ruts Lista de todos los ruts
+     * @return Devuelve si hay algun rut que no esté ingresado en alguna carrera
+     */
+    private boolean isAllFinish(List<ruts> ruts){
+        boolean isAllFinish = true;
+        for(int i=0;i<ruts.size();i++){
+            if(ruts.get(i).codCarreras.get(ruts.get(i).codCarreras.size()-1)!=-1){
+                return false;
+            }
+        }
+        return isAllFinish;
+    }
+    /**
+     * Función que verifica si todas las carreras llegaron al cupo máximo
+     * @param carreras Lista con todas las carreras
+     * @return Devuelve si todas las carreras están al máximo en los cupos o si almenos hay una que le sobre cupos
+     * @throws SQLException Excepción relacionada con algún problema con el motor de base de datos usados.
+     */
+    private boolean isFull(List<carreras> carreras) throws SQLException{
+        boolean isFull = true;
+        for(int i=0;i<carreras.size();i++){
+            Connection connectionDB = connectDB();
+        
+            if(connectionDB!=null){
+                Statement st = connectionDB.createStatement();
+                ResultSet rs = st.executeQuery(queryVacant+carreras.get(i).getCod());
+                rs.next();
+                if(carreras.get(i).personas.size()<rs.getInt(1)){
+                    return false;
+                }
+            }
+        }
+        return isFull;
+    }
+    
+    /**
+     * Función que verifica cual de las dos carreras ingresadas es la que tiene el puntaje del primero mas alto
+     * @param carreraA Codigo de carrera de la carrera A
+     * @param carreraB Codigo de carrera de la carrera B
+     * @return Devuelve si la carrera A tiene el puntajes primero más que la carrera B
+     * @throws SQLException Excepción relacionada con algún problema con el motor de base de datos usados.
+     */
+    private boolean primeroCarrera(int carreraA, int carreraB) throws SQLException{
+        boolean isA=true;
+        Connection connectionDB = connectDB();
+        List<Double> firts = new ArrayList<Double>();
+        List<Integer> codCarreras = new ArrayList<Integer>();
+        codCarreras.add(carreraA);
+        codCarreras.add(carreraB);
+        if(connectionDB!=null){
+            for(int i = 0; i<2;i++){
+                Statement st = connectionDB.createStatement();
+                ResultSet rs = st.executeQuery(queryFirst+codCarreras.get(i));
+                rs.next();
+                firts.add(rs.getDouble(1));
+            }
+        }
+        if(firts.get(0)<firts.get(1)){
+            return false;
+        }
+        return isA;
+    }
+    
     /**
      * Función para setear los datos del objeto File
      * @param bos Array de bytes con el binario del archvio
@@ -96,60 +273,190 @@ public class WServiceImple{
      * @param carrera código de la carrera seleccionada
      * @return devuelve el objeto con File con los datos aplicados
      */
-    private File setData(ByteArrayOutputStream bos, String fileName, String mimeType, int carrera){
+    private File setData(ByteArrayOutputStream bos, String fileName, String mimeType){
         File file = new File();
-        file.setFilename(String.valueOf(carrera)+"_"+fileName);
+        file.setFilename(fileName);
         file.setContent(bos.toByteArray());
         file.setMimetype(mimeType);
         return file;
     }
     /**
-     * Función para operar sobre los datos de un alumno 
-     * @param data datos de un alumno
-     * @param carrera código de la carrera perteneciente 
-     * @return La información de un alumno, según la carrera elegida
-     * @throws java.io.FileNotFoundException Excepción respectiva a que no se encuentra un archivo
-     * @throws java.io.IOException Excepción respectiva a un error de input/output
-     * @throws java.sql.SQLException Excepción respectiva a un error en la conexión a la base de datos o en la sentencia SQL
+     * Función que opera sobre los datos de cada rut y coloca a dicho rut en la carrera en la que consigue mayor ponderación
+     * @param data Array con todos los ruts y sus ponderaciones ingresadas
+     * @param carrera Lista de todas las carreras en el sistema
+     * @param ruts Lista de ruts, donde se guardaran la información de los ruts del array data
+     * @throws FileNotFoundException Excepción respectiva a que no se encuentra un archivo
+     * @throws IOException Excepción respectiva a un error de input/output
+     * @throws SQLException Excepción respectiva a un error en la conexión a la base de datos o en la sentencia SQL
      */
-    private List<String> operador(String data, int carrera) throws IOException, FileNotFoundException, SQLException{
-        String[] datos = data.split(";");
-        List<String> info = new ArrayList<>();
-        if(datos.length>1){
-            info.add(datos[0]);
-            info.add(String.valueOf(ponderador(datos, carrera)));
+    private void operador(String[] data, List<carreras> carrera, List<ruts> ruts) throws IOException, FileNotFoundException, SQLException{
+        
+        for(int i=0;i<data.length;i++){
+            String[] datos = data[i].split(";");
+            Double mayor = 0.0;
+            int codCarrera = carrera.get(0).getCod();
+            for(int j=0;j<carrera.size();j++){
+                if(datos.length>1){
+                    Double ponderado = ponderador(datos,carrera.get(j).getCod());
+                    if(ponderado > mayor){
+                        codCarrera = carrera.get(j).getCod();
+                        mayor = ponderado;
+                    }
+                    else if(ponderado == mayor){
+                        if(!primeroCarrera(codCarrera,carrera.get(j).getCod())){
+                            mayor=ponderado;
+                            codCarrera = carrera.get(j).getCod();
+                        }
+                    }
+                    
+                }
+            }
+            for(int j=0;j<carrera.size();j++){
+                if(carrera.get(j).getCod()==codCarrera){
+                    int index = indexador(carrera.get(j).personas,mayor);
+                    if(index!=-1){
+                        carrera.get(j).personas.add(index,new Pair<>(datos[0],mayor));
+                    }
+                    else{
+                        carrera.get(j).personas.add(new Pair<>(datos[0],mayor));
+                    }
+                    ruts persona = new ruts();
+                    persona.setRut(datos[0]);
+                    persona.puntajes.add(Double.parseDouble(datos[1]));
+                    persona.puntajes.add(Double.parseDouble(datos[2]));
+                    persona.puntajes.add(Double.parseDouble(datos[3]));
+                    persona.puntajes.add(Double.parseDouble(datos[4]));
+                    persona.puntajes.add(Double.parseDouble(datos[5]));
+                    persona.puntajes.add(Double.parseDouble(datos[6]));
+                    ruts.add(persona);
+                    Connection connectionDB = connectDB();
+
+                    if(connectionDB!=null){
+                        Statement st = connectionDB.createStatement();
+                        ResultSet rs = st.executeQuery(queryVacant+codCarrera);
+                        rs.next();
+                        if(carrera.get(j).personas.size()>rs.getInt(1)){
+                            
+                            for(int w=0;w<ruts.size();w++){
+                                if(ruts.get(w).getRut().equals(carrera.get(j).personas.get(carrera.get(j).personas.size()-1).getKey())){
+                                    ruts.get(w).codCarreras.add(carrera.get(j).getCod());
+                                }
+                            }
+                            carrera.get(j).personas.remove(carrera.get(j).personas.size()-1);
+                        }
+                    }
+                    break;
+                }
+            }
+            
         }
-        return info;
     }
     /**
      * Función que pondera los puntajes psu de un alumno
      * @param data Array de strings con los puntajes de un alumno
-     * @param carrera Codigo de la carrera perteneciente
-     * @return La ponderación
+     * @param codCarrera codigo de la carrera perteneciente
+     * @return La ponderación del alumno si es que el promedio simple entre el puntaje de lenguaje y de matematica supera los 450 puntos
      * @throws java.io.FileNotFoundException Excepción respectiva a que no se encuentra un archivo
      * @throws java.io.IOException Excepción respectiva a un error de input/output
      * @throws java.sql.SQLException Excepción respectiva a un error en la conexión a la base de datos o en la sentencia SQL
      */
-    private double ponderador(String[] data, int carrera) throws FileNotFoundException, IOException, SQLException{
+    private double ponderador(String[] data,int codCarrera) throws FileNotFoundException, IOException, SQLException{
+        
         Connection connectionDB = connectDB();
-        double ponderado = 0.0;
+        
         if(connectionDB!=null){
             Statement st = connectionDB.createStatement();
-            ResultSet rs = st.executeQuery(query+carrera);
-            rs.next();
-            if(rs.isLast()){
+            ResultSet rs = st.executeQuery(queryPonderador+ String.valueOf(codCarrera));
+            while(rs.next()){
+                double ponderado = 0.0;
                 ponderado = (Double.parseDouble(data[1]) * rs.getDouble(1) )+
-                            (Double.parseDouble(data[2]) * rs.getDouble(2) )+
-                            (Double.parseDouble(data[3]) * rs.getDouble(3) )+
-                            (Double.parseDouble(data[4]) * rs.getDouble(4) );
+                        (Double.parseDouble(data[2]) * rs.getDouble(2) )+
+                        (Double.parseDouble(data[3]) * rs.getDouble(3) )+
+                        (Double.parseDouble(data[4]) * rs.getDouble(4) );
                 if(Double.parseDouble(data[5])>Double.parseDouble(data[6])){
                     ponderado += (Double.parseDouble(data[5]) * rs.getDouble(5));
                 }
                 else{
                     ponderado += (Double.parseDouble(data[6]) * rs.getDouble(5));
                 }
+                if((Double.parseDouble(data[3])+Double.parseDouble(data[4]))/2 >=450){
+                    return ponderado;
+                }
+                
+            }
+            
+        }
+        return 0.0;
+    }
+    /**
+     * Función que al ingresar el rut de un postulante verifica la n-sima mejor ponderación de varias carreras en las que no ha postulado
+     * @param rut Clase ruts, se encuentra la información de un postulante, entre ellas, a todas las carreras a las que se le ha ingresa y ha salido por sobre cupo
+     * @return Devuelve un par de el código de la siguiente carrera a la que se ingresara y la ponderación que alcanzó en esa carrera
+     * @throws SQLException Excepción respectiva a un error en la conexión a la base de datos o en la sentencia SQL
+     */
+    private Pair<Integer,Double> ponderadorMultiple(ruts rut) throws SQLException{
+        Connection connectionDB = connectDB();
+        
+        if(connectionDB!=null){
+            Statement st = connectionDB.createStatement();
+            if(rut.codCarreras.get(0)!=-1){
+                String fullQuery = queryPonderadorMultiple +" codCarrera <> "+rut.codCarreras.get(0);
+                for(int i=1;i<rut.codCarreras.size();i++){
+                    if(rut.codCarreras.get(i)!=-1){
+                        fullQuery += " AND codCarrera <> "+rut.codCarreras.get(i);
+                    }
+                }
+                ResultSet rs = st.executeQuery(fullQuery);
+                int cod = 0;
+                double mayor = 0.0;
+                double firts = 0.0;
+
+                while(rs.next()){
+                    double ponderado = 0.0;
+                    ponderado = (rut.puntajes.get(0) * rs.getDouble(1) )+
+                            (rut.puntajes.get(1)  * rs.getDouble(2) )+
+                            (rut.puntajes.get(2)  * rs.getDouble(3) )+
+                            (rut.puntajes.get(3)  * rs.getDouble(4) );
+                    if(rut.puntajes.get(4)>rut.puntajes.get(5)){
+                        ponderado += (rut.puntajes.get(4)  * rs.getDouble(5));
+                    }
+                    else{
+                        ponderado += (rut.puntajes.get(5)  * rs.getDouble(5));
+                    }
+                    if((rut.puntajes.get(2) +rut.puntajes.get(3) )/2 >=450){
+                        if(ponderado > mayor){
+                            mayor=ponderado;
+                            cod = rs.getInt(6);
+                            firts = rs.getDouble(7);
+                        }
+                        else if(ponderado == mayor){
+                            if(firts<rs.getDouble(7)){
+                                mayor=ponderado;
+                                cod = rs.getInt(6);
+                                firts = rs.getDouble(7);
+                            }
+                        }
+                    }
+
+                }
+                return new Pair<>(cod,mayor);
             }
         }
-        return ponderado;
+        return null;
+    }
+    /**
+     * Función que devuelve el indice o posicion en el ranking que la ponderación ingresada sobre pasa a la de alguno que se encuentre en el ranking
+     * @param carrera Lista de los pontulantes ingresados en una carrera
+     * @param ponderado Ponderación obtenida en dicha carrera del nuevo postulante
+     * @return Devuelve el índice del primero al que sobre pasa en puntaje en dicha carrera solicitada
+     */
+    private int indexador(List<Pair<String,Double>> carrera,double ponderado){
+        int index=-1;
+        for(int i =0; i<carrera.size();i++){
+            if(ponderado > carrera.get(i).getValue()){
+                return i;
+            }
+        }
+        return index;
     }
 }

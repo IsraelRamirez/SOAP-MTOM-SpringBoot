@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por la arquitectura JavaTM para la implantación de la referencia de enlace (JAXB) XML v2.2.7 
 // Visite <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2020.06.10 a las 01:53:24 PM CLT 
+// Generado el: 2020.06.15 a las 03:59:25 PM CLT 
 //
 
 
@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="token" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="codCarrera" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="filename" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="mimetype" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="content" type="{http://www.w3.org/2001/XMLSchema}string"/>
@@ -41,7 +40,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "token",
-    "codCarrera",
     "filename",
     "mimetype",
     "content"
@@ -51,8 +49,6 @@ public class GetDataRequest {
 
     @XmlElement(required = true)
     protected String token;
-    @XmlElement(required = true)
-    protected String codCarrera;
     @XmlElement(required = true)
     protected String filename;
     @XmlElement(required = true)
@@ -82,30 +78,6 @@ public class GetDataRequest {
      */
     public void setToken(String value) {
         this.token = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad codCarrera.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCodCarrera() {
-        return codCarrera;
-    }
-
-    /**
-     * Define el valor de la propiedad codCarrera.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCodCarrera(String value) {
-        this.codCarrera = value;
     }
 
     /**
