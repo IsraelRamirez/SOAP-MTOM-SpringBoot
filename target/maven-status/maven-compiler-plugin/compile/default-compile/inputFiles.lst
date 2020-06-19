@@ -1,6 +1,8 @@
 /media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/config/SoapWSConfig.java
 /media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/dbconnetion/connetiondb.java
 /media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/ObjectFactory.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/carreras.java
+/media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/ruts.java
 /media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/endpoint/soapEndPoint.java
 /media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/models/package-info.java
 /media/compartida/SOAP-MTOM-SpringBoot/src/main/java/cl/taller/soap/service/WServiceImple.java

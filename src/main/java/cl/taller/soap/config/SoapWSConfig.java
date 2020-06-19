@@ -14,6 +14,11 @@ import org.springframework.xml.xsd.XsdSchema;
 @Configuration
 @EnableWs
 public class SoapWSConfig extends WsConfigurationSupport{
+    /**
+     * Función despachadora de mensajes de servlet
+     * @param context Recibe el contexto de la aplicación
+     * @return Devuelve un mensaje necesario dado por el contexto
+     */
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context){
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
@@ -21,7 +26,11 @@ public class SoapWSConfig extends WsConfigurationSupport{
         servlet.setTransformWsdlLocations(true);
         return new ServletRegistrationBean<MessageDispatcherServlet>(servlet,"/ws/*");
     }
-   
+    /**
+     * Función que genera la definición del Wsdl según el esquema ingresado
+     * @param schema Es el esquema declarado de como se recibe y se envia la información
+     * @return Devuelve la definición wsdl
+     */
     @Bean(name="soap")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema schema){
         DefaultWsdl11Definition defaultWsdl11Definition=new DefaultWsdl11Definition();
@@ -31,6 +40,10 @@ public class SoapWSConfig extends WsConfigurationSupport{
         defaultWsdl11Definition.setSchema(schema);
         return defaultWsdl11Definition;
     }
+    /**
+     * Función que devuelve el esquema xml creado
+     * @return Devuelve el esquema creado "soapSchema.xsd"
+     */
     @Bean
     public XsdSchema schema(){
         return new SimpleXsdSchema(new ClassPathResource("soapSchema.xsd"));
