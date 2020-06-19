@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     
     vector<carreras> carrera=initCarreras();
     vector<ruts> rut;
-    ifstream entrada("/media/compartida/puntajes2.csv");
+    ifstream entrada("/media/compartida/puntajes.csv");
     //string fullData ="14916641;556;553;491;660;555;656\n14916642;706;610;696;629;550;564\n16170579;618;545;583;650;621;661\n18678455;679;603;689;563;643;516\n14916643;631;533;619;625;634;487\n17424517;490;732;495;647;560;583\n14916644;479;609;688;603;490;750\n18678456;485;543;483;502;659;550\n16170580;661;518;622;493;680;539\n17424518;639;654;500;583;714;724\n14916645;547;542;622;495;563;710\n18678457;692;659;658;625;625;617\n16170581;662;529;540;588;525;593\n17424519;540;738;732;529;588;601\n14916646;520;529;555;510;664;501\n18678458;519;560;522;736;626;538\n16170582;557;562;626;661;749;690\n";//= argv[1];
     vector<string> datas; //= split(fullData,'\n');
     for(string linea;getline(entrada,linea);){
@@ -51,7 +51,6 @@ int main(int argc, char** argv) {
 #pragma omp parallel
 {
 #pragma omp for
-{
         for(int i = 0; i<rutLength;i++){
             int rutCodLength = rut.at(i).codCarreras.size();
             
@@ -89,24 +88,22 @@ int main(int argc, char** argv) {
                                     
                                 }
                                 
-                                int carPersonasLength = carrera.at(j).personas.size();
-                                if(carPersonasLength>carrera.at(j).getVacant()){
+                                if(carrera.at(j).personas.size()>carrera.at(j).getVacant()){
                                     
-                                    string tmpRut = carrera.at(j).personas.at(carPersonasLength-1).first;
+                                    string tmpRut = carrera.at(j).personas.at(carrera.at(j).personas.size()-1).first;
                                     //usar la funcion remove 
-                                    carrera.at(j).personas=remove(carrera.at(j).personas,carPersonasLength--);
-                                    for(int k=0;k<rutLength;k++){
-                                        if(rut.at(k).getRut()==tmpRut){
-                                            
-                                            rut.at(k).codCarreras.push_back(carrera.at(j).getCod());
-                                            break;
+                                    if(carrera.at(j).personas.at(carrera.at(j).personas.size()-1).first==tmpRut){
+                                        carrera.at(j).personas=remove(carrera.at(j).personas,carrera.at(j).personas.size()-1);
+                                        for(int k=0;k<rutLength;k++){
+                                            if(rut.at(k).getRut()==tmpRut){
+                                                rut.at(k).codCarreras.push_back(carrera.at(j).getCod());
+                                                break;
+                                            }
                                         }
                                     }
-                                
                                 }
-                            
-                                break;
 }
+                                break;
                             }
                         
 
@@ -122,7 +119,6 @@ int main(int argc, char** argv) {
             }
         }
 }
-}
     }
     for(int i =0;i<carrera.size();i++){
         cout<<carrera[i].getCod()<<endl;
@@ -131,7 +127,19 @@ int main(int argc, char** argv) {
         }
         cout<<endl<<endl;
     }
-    
+    /*
+    ruts test;
+    test.setRut("1422");
+    test.puntajes.push_back(450.0);
+    test.puntajes.push_back(550.0);
+    test.puntajes.push_back(650.0);
+    test.puntajes.push_back(350.0);
+    test.puntajes.push_back(480.0);
+    test.puntajes.push_back(600.0);
+    test.codCarreras.push_back(21041);
+    test.codCarreras.push_back(21089);
+    pair<int,double> pa = ponderadorMultiple(test);
+    cout<<"first: "<<pa.first<<" second: "<<pa.second<<endl;*/
     return 0;
 }
 
@@ -173,7 +181,6 @@ void operador(vector<string> data, vector<carreras>* carrera, vector<ruts>* ruts
 #pragma omp parallel
 {
 #pragma omp for
-{
     for(int i=0;i<data.size();i++){
         vector<string> datos = split(data.at(i),';');
         if(datos.size()>1){
@@ -243,7 +250,6 @@ void operador(vector<string> data, vector<carreras>* carrera, vector<ruts>* ruts
     }
 }
 }
-}
 double ponderador(vector<string> data,int codCarrera){
     connect db;
     db.dbconnect(ipserver,port,dbname,user,password);
@@ -277,11 +283,12 @@ pair<int,double> ponderadorMultiple(ruts rut){
             }
         }
         db.dbquery(tc(fullQuery));
+        cout<<"rows: "<<db.dbnumrows()<<endl;
         int cod = 0;
         double mayor = 0.0;
         for(int i=0; i<db.dbnumrows();i++){
-            double ponderado = 0.0;
-            ponderado = (rut.puntajes.at(0) * stod(db.dbOutCome(i,0)) )+(rut.puntajes.at(1)  * stod(db.dbOutCome(i,1)) )+(rut.puntajes.at(2)+stod(db.dbOutCome(i,2)))+(rut.puntajes.at(3)  * stod(db.dbOutCome(i,0)));
+            double ponderado;
+            ponderado = (rut.puntajes.at(0) * stod(db.dbOutCome(i,0)))+(rut.puntajes.at(1)  * stod(db.dbOutCome(i,1)))+(rut.puntajes.at(2)*stod(db.dbOutCome(i,2)))+(rut.puntajes.at(3)  * stod(db.dbOutCome(i,0)));
             if(rut.puntajes.at(4)>rut.puntajes.at(5)){
                 ponderado += (rut.puntajes.at(4)  * stod(db.dbOutCome(i,4)));
             }
@@ -295,6 +302,7 @@ pair<int,double> ponderadorMultiple(ruts rut){
                 }
             }
         }
+        cout<<"Mayor Ponderado: "<<mayor<<endl;
         db.dbfree();
         db.dbclose();
         pair<int,double> pa(cod,mayor);
@@ -370,4 +378,3 @@ bool isEmpty(vector<ruts> rut){
     }
     return isEmpty;
 }
-
