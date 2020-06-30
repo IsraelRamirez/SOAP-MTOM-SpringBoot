@@ -1,0 +1,12 @@
+cl/taller/soap/models/package-info.class
+cl/taller/soap/dbconnetion/connetiondb.class
+cl/taller/soap/endpoint/soapEndPoint.class
+cl/taller/soap/models/ObjectFactory.class
+cl/taller/soap/WSsoapApplication.class
+cl/taller/soap/models/File.class
+cl/taller/soap/models/GetDataResponse.class
+cl/taller/soap/models/GetDataRequest.class
+cl/taller/soap/models/ruts.class
+cl/taller/soap/config/SoapWSConfig.class
+cl/taller/soap/models/carreras.class
+cl/taller/soap/service/WServiceImple.class
